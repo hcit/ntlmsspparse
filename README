@@ -1,9 +1,9 @@
 This script can pull ntlmssp hashes with the challenge/response from a pcap.
 
-It's pretty slow, and i'm not entirely sure if it gets the correct server challenge yet.
+It's pretty slow, and I'm not entirely sure if it gets the correct server challenge yet.
 
-My old method, seen here (http://psychomari0.wordpress.com/2012/04/04/pcaptontlmssp/) doesn't
-seem to work becuase the username is unicode and the -z to show the username is null terminated
+My old method, seen here (http://psychomari0.wordpress.com/2012/04/04/pcaptontlmssp/) 
+doesn't seem to work becuase the username is unicode and the -z to show the username is null terminated
 
 USAGE:
 python ntlmssp.py <outfile.pcap>
