@@ -61,14 +61,12 @@ def decode_ntlmssp_server(ntlmssp_raw):
     return chall
 
 def getntlmssp_raw(packet):
-    if type(packet) != type(Ether()):
-        return -1
     if packet['Raw'].load[5:8] == 'SMB':
         ntlmssp_raw=packet['Raw'].load[packet['Raw'].load.index('NTLMSSP'):]
     elif 'Negot' in packet['Raw'].load:
         ntlmssp_raw=base64.b64decode([i for i in packet['Raw'].load.split('\r\n') if 'Negot' in i][0].split()[2])
     else:
-        return -1
+        "\x00"*12 #stops breakage in decode_ntlmssp
     return ntlmssp_raw
 
 def decode_ntlmssp(packetpair):
