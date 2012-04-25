@@ -14,7 +14,7 @@ print "If you haven't run \n'tshark -r %s 'ntlmssp.ntlmserverchallenge or ntlmss
 def decode_ntlmssp_client(ntlmssp_raw):
     ntlmssp=ntlmssp_raw[12:92]
     #!h!h!q!h!h!q!h!h!q!h!h!q!qiq
-    #lmlen,lmmax,lmoff,ntlen,ntmax,ntoff,domlen,dommax,domoff,userlen,usermax,useroff,hostlen,hostmax,hostoff,sesskey,flags,vers=struct.unpack("!hhqhhqhhqhhqhhqqiq",ntlmssp)
+    #lmlen,lmmax,lmoff,ntlen,ntmax,ntoff,domlen,dommax,domoff,userlen,usermax,useroff,hostlen,hostmax,hostoff,sesskey,flags,vers=struct.unpack("!hhihhihhihhihhiqiq",ntlmssp)
 
     lm=ntlmssp[:8]
     ntlmssp=ntlmssp[8:]
