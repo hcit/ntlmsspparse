@@ -66,7 +66,7 @@ def getntlmssp_raw(packet):
     elif 'Negot' in packet['Raw'].load:
         ntlmssp_raw=base64.b64decode([i for i in packet['Raw'].load.split('\r\n') if 'Negot' in i][0].split()[2])
     else:
-        "\x00"*12 #stops breakage in decode_ntlmssp
+        return "\x00"*12 #stops breakage in decode_ntlmssp
     return ntlmssp_raw
 
 def decode_ntlmssp(packetpair):
