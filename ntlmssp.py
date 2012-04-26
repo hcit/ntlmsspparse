@@ -89,7 +89,7 @@ def decode_ntlmssp(packetpair):
             chall=decode_ntlmssp_server(ntlmssp_raw)
         elif pkttype == 3: #AUTH
             username,domain,nthash,lmhash=decode_ntlmssp_client(ntlmssp_raw)
-    if len(lmhash) < 48 or len(nthash) < 48:
+    if len(lmhash) > 48 or len(nthash) > 48:
         return -1
     hashes.append(username+"::"+domain+":"+lmhash+":"+nthash+":"+chall)
 
