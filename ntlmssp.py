@@ -8,50 +8,54 @@ import sys
 import struct
 if len(sys.argv) != 2:
     print "Usage:\n\t%s <file>.pcap" % sys.argv[0]
+    print "\nIt's probably best to run:\n\ttshark -r %s 'ntlmssp.ntlmserverchallenge or ntlmssp.ntlmclientchallenge [and http]' -w <outfile.pcap>'" % sys.argv[1]
+    print "where [and http] is optional but recommended"
+    print "\nBy Rory McNamara
+    print "pink.banana.fish@gmail.com"
     sys.exit(1)
-print "If you haven't run \n'tshark -r %s 'ntlmssp.ntlmserverchallenge or ntlmssp.ntlmclientchallenge' -w out.pcap\nThis could take a very long time\n" % sys.argv[1]
 
 def decode_ntlmssp_client(ntlmssp_raw):
-    ntlmssp=ntlmssp_raw[12:92]
+    ntlmssp=ntlmssp_raw[12:]
     #!h!h!q!h!h!q!h!h!q!h!h!q!qiq
-    #lmlen,lmmax,lmoff,ntlen,ntmax,ntoff,domlen,dommax,domoff,userlen,usermax,useroff,hostlen,hostmax,hostoff,sesskey,flags,vers=struct.unpack("!hhihhihhihhihhiqiq",ntlmssp)
+    lmlen,lmmax,lmoff,ntlen,ntmax,ntoff,domlen,dommax,domoff,userlen,usermax,useroff,hostlen,hostmax,hostoff,sesskey,flags,vers=struct.unpack("hhihhihhihhihhiqiq",ntlmssp[:64])
 
-    lm=ntlmssp[:8]
-    ntlmssp=ntlmssp[8:]
-    lmlen=socket.ntohs(int(binascii.hexlify(lm[:2]),16))
-    lmmax=socket.ntohs(int(binascii.hexlify(lm[2:4]),16))
-    lmoff=socket.ntohl(int(binascii.hexlify(lm[4:]),16))
-    nt=ntlmssp[:8]
-    ntlmssp=ntlmssp[8:]
-    ntlen=socket.ntohs(int(binascii.hexlify(nt[:2]),16))
-    ntmax=socket.ntohs(int(binascii.hexlify(nt[2:4]),16))
-    ntoff=socket.ntohl(int(binascii.hexlify(nt[4:]),16))
-    dom=ntlmssp[:8]
-    ntlmssp=ntlmssp[8:]
-    domlen=socket.ntohs(int(binascii.hexlify(dom[:2]),16))
-    dommax=socket.ntohs(int(binascii.hexlify(dom[2:4]),16))
-    domoff=socket.ntohl(int(binascii.hexlify(dom[4:]),16))
-    user=ntlmssp[:8]
-    ntlmssp=ntlmssp[8:]
-    userlen=socket.ntohs(int(binascii.hexlify(user[:2]),16))
-    usermax=socket.ntohs(int(binascii.hexlify(user[2:4]),16))
-    useroff=socket.ntohl(int(binascii.hexlify(user[4:]),16))
-    host=ntlmssp[:8]
-    ntlmssp=ntlmssp[8:]
-    hostlen=socket.ntohs(int(binascii.hexlify(host[:2]),16))
-    hostmax=socket.ntohs(int(binascii.hexlify(host[2:4]),16))
-    hostoff=socket.ntohl(int(binascii.hexlify(host[4:]),16))
-    sesskey=ntlmssp[:8]
-    ntlmssp=ntlmssp[8:]
-    flags=ntlmssp[:4]
-    ntlmssp=ntlmssp[4:]
-    vers=ntlmssp[:8]
-    ntlmssp=ntlmssp[8:]
+    #lm=ntlmssp[:8]
+    #ntlmssp=ntlmssp[8:]
+    #lmlen=socket.ntohs(int(binascii.hexlify(lm[:2]),16))
+    #lmmax=socket.ntohs(int(binascii.hexlify(lm[2:4]),16))
+    #lmoff=socket.ntohl(int(binascii.hexlify(lm[4:]),16))
+    #nt=ntlmssp[:8]
+    #ntlmssp=ntlmssp[8:]
+    #ntlen=socket.ntohs(int(binascii.hexlify(nt[:2]),16))
+    #ntmax=socket.ntohs(int(binascii.hexlify(nt[2:4]),16))
+    #ntoff=socket.ntohl(int(binascii.hexlify(nt[4:]),16))
+    #dom=ntlmssp[:8]
+    #ntlmssp=ntlmssp[8:]
+    #domlen=socket.ntohs(int(binascii.hexlify(dom[:2]),16))
+    #dommax=socket.ntohs(int(binascii.hexlify(dom[2:4]),16))
+    #domoff=socket.ntohl(int(binascii.hexlify(dom[4:]),16))
+    #user=ntlmssp[:8]
+    #ntlmssp=ntlmssp[8:]
+    #userlen=socket.ntohs(int(binascii.hexlify(user[:2]),16))
+    #usermax=socket.ntohs(int(binascii.hexlify(user[2:4]),16))
+    #useroff=socket.ntohl(int(binascii.hexlify(user[4:]),16))
+    #host=ntlmssp[:8]
+    #ntlmssp=ntlmssp[8:]
+    #hostlen=socket.ntohs(int(binascii.hexlify(host[:2]),16))
+    #hostmax=socket.ntohs(int(binascii.hexlify(host[2:4]),16))
+    #hostoff=socket.ntohl(int(binascii.hexlify(host[4:]),16))
+    #sesskey=ntlmssp[:8]
+    #ntlmssp=ntlmssp[8:]
+    #flags=ntlmssp[:4]
+    #ntlmssp=ntlmssp[4:]
+    #vers=ntlmssp[:8]
+    #ntlmssp=ntlmssp[8:]
     username=ntlmssp_raw[useroff:useroff+userlen].replace('\0','')
     domain=ntlmssp_raw[domoff:domoff+domlen].replace('\0','')
     nthash=binascii.hexlify(ntlmssp_raw[ntoff:ntoff+ntlen])
     lmhash=binascii.hexlify(ntlmssp_raw[lmoff:lmoff+lmlen])
     chall=binascii.hexlify(ntlmssp_raw[hostoff+hostlen:hostoff+hostlen+8])
+    #print (lmlen,lmmax,lmoff,ntlen,ntmax,ntoff,domlen,dommax,domoff,userlen,usermax,useroff,hostlen,hostmax,hostoff,sesskey,flags,vers)
     return [username,domain,nthash,lmhash]
 
 def decode_ntlmssp_server(ntlmssp_raw):
