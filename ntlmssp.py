@@ -8,9 +8,9 @@ import sys
 import struct
 if len(sys.argv) != 2:
     print "Usage:\n\t%s <file>.pcap" % sys.argv[0]
-    print "\nIt's probably best to run:\n\ttshark -r %s 'ntlmssp.ntlmserverchallenge or ntlmssp.ntlmclientchallenge [and http]' -w <outfile.pcap>'" % sys.argv[1]
+    print "\nIt's probably best to run:\n\ttshark -r <infile.pcap> 'ntlmssp.ntlmserverchallenge or ntlmssp.ntlmclientchallenge [and http]' -w <outfile.pcap>'"
     print "where [and http] is optional but recommended"
-    print "\nBy Rory McNamara
+    print "\nBy Rory McNamara"
     print "pink.banana.fish@gmail.com"
     sys.exit(1)
 
@@ -89,12 +89,14 @@ def decode_ntlmssp(packetpair):
             chall=decode_ntlmssp_server(ntlmssp_raw)
         elif pkttype == 3: #AUTH
             username,domain,nthash,lmhash=decode_ntlmssp_client(ntlmssp_raw)
+    if len(lmhash) < 48 or len(nthash) < 48:
+        return -1
     hashes.append(username+"::"+domain+":"+lmhash+":"+nthash+":"+chall)
 
 def makepairs(packets):
     pairs=[]
     for i,packet in enumerate(packets):
-        sys.stdout.write(str('\r'+str(i)+'/'+str(len(packets))))
+        sys.stderr.write(str('\r'+str(i)+'/'+str(len(packets))))
         srcip=packet['IP'].dst
         srcprt=packet['TCP'].dport
         dstip=packet['IP'].src
@@ -106,22 +108,22 @@ def makepairs(packets):
             pairs.append([0,0])
         if len([otherpacket,packet]) == 2:
             pairs.append([otherpacket,packet])
-    print
+    sys.stderr.write('\n')
     return pairs
         
 hashes=[]
-print "Loading packets..."
+print >> sys.stderr, "Loading packets..."
 packets=rdpcap(sys.argv[1])
-print "Packets Loaded"
-print "Making pairs..."
+print >> sys.stderr, "Packets Loaded"
+print >> sys.stderr, "Making pairs..."
 pairs=makepairs(packets)
-print "Finished making pairs"
-print "Decoding negotiations..."
+print >> sys.stderr, "Finished making pairs"
+print >> sys.stderr, "Decoding negotiations..."
 for i in pairs:
     if i == [0,0] or not i:
         continue
     decode_ntlmssp(i)
-print "Negotiations decoded"
+print >> sys.stderr, "Negotiations decoded"
 hashes=list(set(hashes))
 for hash in hashes:
     print hash

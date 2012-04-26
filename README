@@ -15,3 +15,6 @@ python ntlmssp.py <outfile.pcap>
 You MUST run:
     tshark -r <file>.pcap 'ntlmssp.ntlmserverchallenge or ntlmssp.ntlmclientchallenge' -w <outfile.pcap>
 before running this program, or it will take ages.
+
+Becuase scapy doesn't have a state machine, like tcp.stream in wireshark/tshark, my method for finding the
+server/client pair is kind of botched. I basically flip source and dest ip and ports and take the first packet
