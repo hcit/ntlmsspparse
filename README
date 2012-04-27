@@ -1,7 +1,7 @@
 This script can pull ntlmssp hashes with the challenge/response from a pcap.
 Requires scapy
 
-It's pretty slow, and I'm not entirely sure if it gets the correct server challenge yet.
+It's pretty slow, and I'm not entirely sure if it gets the correct server challenge yet. (update: i've successfully cracked hashes from this script, implying it has all that is necessary)
 It's also terribly written, all my type checking and return checking is in all the 
 wrong places. Essentially it's a dirty hack that *should* get the job done
 
