@@ -10,8 +10,7 @@ if len(sys.argv) != 2:
     print "Usage:\n\t%s <file>.pcap" % sys.argv[0]
     print "\nIt's probably best to run:\n\ttshark -r <infile.pcap> 'ntlmssp.ntlmserverchallenge or ntlmssp.ntlmclientchallenge [and http]' -w <outfile.pcap>'"
     print "where [and http] is optional but recommended"
-    print "\nBy Rory McNamara"
-    print "pink.banana.fish@gmail.com"
+    print "\nBy @Psychomario"
     sys.exit(1)
 
 def decode_ntlmssp_client(ntlmssp_raw):
